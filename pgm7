@@ -1,0 +1,49 @@
+wsl --install
+
+Step 2: Open Ubuntu (WSL)
+After installation and reboot:
+1. Search for "Ubuntu" in the Start menu and open it.
+2. It will prompt you to set a Linux username and password (this is separate from your Windows account)
+
+sudo apt update
+sudo apt install ansible -y
+
+ansible --version
+
+
+Open your Ubuntu terminal and run:
+bash
+mkdir ~/ansible-lab
+cd ~/ansible-lab
+
+nano hosts
+
+[local]
+localhost ansible_connection=local
+
+ansible -i hosts local -m ping
+
+nano install_nginx.yml
+
+
+---
+- name: Install and start NGINX on localhost
+  hosts: local
+  become: yes
+  tasks:
+    - name: Install NGINX
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Ensure NGINX is running
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+
+ansible-playbook -i hosts install_nginx.yml
+
+curl http://localhost
